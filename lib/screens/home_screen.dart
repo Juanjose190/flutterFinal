@@ -80,60 +80,61 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
               SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 0.98,
-              ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  final item = _items[index];
-                  final selected = _selectedIndex == index;
-                  
-                  // Animación escalonada para cada tarjeta
-                  return AnimatedBuilder(
-                    animation: _animationController,
-                    builder: (context, child) {
-                      // Retraso escalonado para cada tarjeta
-                      final delay = index * 0.1;
-                      final itemAnimation = CurvedAnimation(
-                        parent: _animationController,
-                        curve: Interval(
-                          delay.clamp(0.0, 0.9), // Inicio retrasado según el índice
-                          (delay + 0.5).clamp(0.0, 1.0), // Fin de la animación
-                          curve: Curves.easeOutCubic,
-                        ),
-                      );
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 12,
+                    crossAxisSpacing: 12,
+                    childAspectRatio: 0.98,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final item = _items[index];
+                      final selected = _selectedIndex == index;
                       
-                      return FadeTransition(
-                        opacity: itemAnimation,
-                        child: SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0, 0.1),
-                            end: Offset.zero,
-                          ).animate(itemAnimation),
-                          child: child,
+                      // Animación escalonada para cada tarjeta
+                      return AnimatedBuilder(
+                        animation: _animationController,
+                        builder: (context, child) {
+                          // Retraso escalonado para cada tarjeta
+                          final delay = index * 0.1;
+                          final itemAnimation = CurvedAnimation(
+                            parent: _animationController,
+                            curve: Interval(
+                              delay.clamp(0.0, 0.9), // Inicio retrasado según el índice
+                              (delay + 0.5).clamp(0.0, 1.0), // Fin de la animación
+                              curve: Curves.easeOutCubic,
+                            ),
+                          );
+                          
+                          return FadeTransition(
+                            opacity: itemAnimation,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.1),
+                                end: Offset.zero,
+                              ).animate(itemAnimation),
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: _HomeCard(
+                          item: item,
+                          selected: selected,
+                          onTap: () {
+                            setState(() => _selectedIndex = index);
+                            if (item.route != null && item.route!.isNotEmpty) {
+                              context.push(item.route!);
+                            }
+                          },
                         ),
                       );
                     },
-                    child: _HomeCard(
-                      item: item,
-                      selected: selected,
-                      onTap: () {
-                        setState(() => _selectedIndex = index);
-                        if (item.route != null && item.route!.isNotEmpty) {
-                          context.push(item.route!);
-                        }
-                      },
-                    ),
-                  );
-                },
-                childCount: _items.length,
+                    childCount: _items.length,
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
-         ),
         ),
       ),
       backgroundColor: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF8F8F8), // Actualizado para Light mode
