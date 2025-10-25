@@ -10,8 +10,11 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
   int? _selectedIndex;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
 
   final List<_HomeItem> _items = const [
     _HomeItem(icon: CupertinoIcons.person_2, title: 'Docentes', subtitle: 'Gestión de profesores', route: '/docentes'),
@@ -23,23 +26,60 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    
+    _fadeAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    );
+    
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.05),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeInOut,
+    ));
+    
+    // Iniciar la animación después de un breve retraso para asegurar que el widget esté montado
+    Future.delayed(const Duration(milliseconds: 100), () {
+      _animationController.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          SliverAppBar.large(
-            title: const Text('Inicio'),
-            floating: true,
-            snap: true,
-            actions: const [ThemeToggle()],
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            sliver: SliverGrid(
+      body: FadeTransition(
+        opacity: _fadeAnimation,
+        child: SlideTransition(
+          position: _slideAnimation,
+          child: CustomScrollView(
+            physics: const BouncingScrollPhysics(),
+            slivers: [
+              SliverAppBar.large(
+                title: const Text('Inicio'),
+                floating: true,
+                snap: true,
+                actions: const [ThemeToggle()],
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                sliver: SliverGrid(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 mainAxisSpacing: 12,
@@ -50,24 +90,53 @@ class _HomeScreenState extends State<HomeScreen> {
                 (context, index) {
                   final item = _items[index];
                   final selected = _selectedIndex == index;
-                  return _HomeCard(
-                    item: item,
-                    selected: selected,
-                    onTap: () {
-                      setState(() => _selectedIndex = index);
-                      if (item.route != null && item.route!.isNotEmpty) {
-                        context.push(item.route!);
-                      }
+                  
+                  // Animación escalonada para cada tarjeta
+                  return AnimatedBuilder(
+                    animation: _animationController,
+                    builder: (context, child) {
+                      // Retraso escalonado para cada tarjeta
+                      final delay = index * 0.1;
+                      final itemAnimation = CurvedAnimation(
+                        parent: _animationController,
+                        curve: Interval(
+                          delay.clamp(0.0, 0.9), // Inicio retrasado según el índice
+                          (delay + 0.5).clamp(0.0, 1.0), // Fin de la animación
+                          curve: Curves.easeOutCubic,
+                        ),
+                      );
+                      
+                      return FadeTransition(
+                        opacity: itemAnimation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0, 0.1),
+                            end: Offset.zero,
+                          ).animate(itemAnimation),
+                          child: child,
+                        ),
+                      );
                     },
+                    child: _HomeCard(
+                      item: item,
+                      selected: selected,
+                      onTap: () {
+                        setState(() => _selectedIndex = index);
+                        if (item.route != null && item.route!.isNotEmpty) {
+                          context.push(item.route!);
+                        }
+                      },
+                    ),
                   );
                 },
                 childCount: _items.length,
               ),
             ),
           ),
-        ],
+         ),
+        ),
       ),
-      backgroundColor: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF2F2F7),
+      backgroundColor: isDark ? const Color(0xFF1C1C1E) : const Color(0xFFF8F8F8), // Actualizado para Light mode
     );
   }
 }

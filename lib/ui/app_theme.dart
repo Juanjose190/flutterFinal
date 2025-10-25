@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const _lightSeed = Color(0xFF0A84FF); // Apple blue
+  static const _lightSeed = Color(0xFFFFCC00); // Color acento pastel para Light mode
   static const _darkSeed = Color(0xFF64D2FF);  // Lighter accent for dark
 
   static ThemeData light() {
@@ -15,8 +15,9 @@ class AppTheme {
         surface: Colors.white,
         surfaceContainerHighest: Colors.white,
         outline: const Color(0xFFD1D1D6),
+        primary: const Color(0xFFFFCC00), // Color acento pastel
       ),
-      scaffoldBackgroundColor: const Color(0xFFF2F2F7),
+      scaffoldBackgroundColor: const Color(0xFFF8F8F8), // Fondo principal actualizado
       dividerColor: const Color(0xFFD1D1D6),
       visualDensity: VisualDensity.standard,
       fontFamily: 'SF Pro Display', // fallback to system on non-iOS
@@ -42,6 +43,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         clipBehavior: Clip.antiAlias,
         color: Colors.white,
+        shadowColor: Colors.black.withOpacity(0.08), // Sombras más suaves
       ),
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
