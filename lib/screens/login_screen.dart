@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: cs.surfaceVariant.withOpacity(0.45),
+      fillColor: cs.surfaceContainerHighest.withOpacity(0.45),
       prefixIcon: Icon(icon),
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(18)),
       focusedBorder: OutlineInputBorder(
@@ -83,16 +83,29 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
-                BoxShadow(color: cs.primary.withOpacity(0.25), blurRadius: 16, offset: const Offset(0, 8)),
+                BoxShadow(
+                  color: cs.primary.withOpacity(0.25),
+                  blurRadius: 16,
+                  offset: const Offset(0, 8),
+                ),
               ],
             ),
             alignment: Alignment.center,
             child: const Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(CupertinoIcons.arrow_right_circle_fill, color: Colors.white),
+                Icon(
+                  CupertinoIcons.arrow_right_circle_fill,
+                  color: Colors.white,
+                ),
                 SizedBox(width: 8),
-                Text('Login', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                Text(
+                  'Login',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -111,12 +124,19 @@ class _LoginScreenState extends State<LoginScreen> {
           width: 64,
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [cs.primary.withOpacity(0.9), cs.primary.withOpacity(0.6)],
+              colors: [
+                cs.primary.withOpacity(0.9),
+                cs.primary.withOpacity(0.6),
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             boxShadow: [
-              BoxShadow(color: cs.primary.withOpacity(0.2), blurRadius: 18, offset: const Offset(0, 10)),
+              BoxShadow(
+                color: cs.primary.withOpacity(0.2),
+                blurRadius: 18,
+                offset: const Offset(0, 10),
+              ),
             ],
             borderRadius: BorderRadius.circular(16),
           ),
@@ -138,7 +158,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   _logo(cs),
                   const SizedBox(width: 12),
-                  const Text('Iniciar sesión', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                  const Text(
+                    'Iniciar sesión',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -146,7 +169,11 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController,
                 focusNode: _emailFocus,
                 keyboardType: TextInputType.emailAddress,
-                decoration: _decoration(cs, 'Correo electrónico', CupertinoIcons.envelope),
+                decoration: _decoration(
+                  cs,
+                  'Correo electrónico',
+                  CupertinoIcons.envelope,
+                ),
               ),
               const SizedBox(height: 12),
               TextField(
@@ -254,8 +281,32 @@ class _LoginScreenState extends State<LoginScreen> {
                 curve: Curves.easeOut,
                 opacity: _loaded ? 1 : 0,
                 child: isWide
-                    ? Row(children: [Expanded(flex: 5, child: Padding(padding: const EdgeInsets.all(24), child: left)), Expanded(flex: 5, child: right)])
-                    : SingleChildScrollView(child: Column(children: [SizedBox(height: MediaQuery.of(context).padding.top + 24), SizedBox(height: 240, child: right), Padding(padding: const EdgeInsets.all(16), child: left)])),
+                    ? Row(
+                        children: [
+                          Expanded(
+                            flex: 5,
+                            child: Padding(
+                              padding: const EdgeInsets.all(24),
+                              child: left,
+                            ),
+                          ),
+                          Expanded(flex: 5, child: right),
+                        ],
+                      )
+                    : SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.of(context).padding.top + 24,
+                            ),
+                            SizedBox(height: 240, child: right),
+                            Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: left,
+                            ),
+                          ],
+                        ),
+                      ),
               );
             },
           ),
