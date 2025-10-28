@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const _lightSeed = Color(0xFFFFCC00); // Color acento pastel para Light mode
-  static const _darkSeed = Color(0xFF64D2FF);  // Lighter accent for dark
+  static const _lightSeed = Color(
+    0xFFFFCC00,
+  ); // Color acento pastel para Light mode
+  static const _darkSeed = Color(0xFF64D2FF); // Lighter accent for dark
 
   static ThemeData light() {
     final scheme = ColorScheme.fromSeed(
@@ -17,7 +19,9 @@ class AppTheme {
         outline: const Color(0xFFD1D1D6),
         primary: const Color(0xFFFFCC00), // Color acento pastel
       ),
-      scaffoldBackgroundColor: const Color(0xFFF8F8F8), // Fondo principal actualizado
+      scaffoldBackgroundColor: const Color(
+        0xFFF8F8F8,
+      ), // Fondo principal actualizado
       dividerColor: const Color(0xFFD1D1D6),
       visualDensity: VisualDensity.standard,
       fontFamily: 'SF Pro Display', // fallback to system on non-iOS
@@ -33,7 +37,7 @@ class AppTheme {
         indicatorColor: scheme.primary.withOpacity(0.12),
         backgroundColor: Colors.white.withOpacity(0.9),
         elevation: 12,
-        labelTextStyle: MaterialStateProperty.all(
+        labelTextStyle: WidgetStateProperty.all(
           const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
@@ -85,7 +89,7 @@ class AppTheme {
         indicatorColor: scheme.primary.withOpacity(0.12),
         backgroundColor: const Color(0xFF2C2C2E).withOpacity(0.85),
         elevation: 12,
-        labelTextStyle: MaterialStateProperty.all(
+        labelTextStyle: WidgetStateProperty.all(
           const TextStyle(fontWeight: FontWeight.w600),
         ),
       ),
@@ -127,8 +131,14 @@ class AppTheme {
       headlineLarge: titleLarge,
       titleLarge: titleLarge,
       titleMedium: titleMedium,
-      bodyLarge: bodyLarge.copyWith(color: isDark ? Colors.white : const Color(0xFF1C1C1E)),
-      bodyMedium: bodyMedium.copyWith(color: isDark ? const Color(0xFFEBEBF5).withOpacity(0.6) : const Color(0xFF3A3A3C)),
+      bodyLarge: bodyLarge.copyWith(
+        color: isDark ? Colors.white : const Color(0xFF1C1C1E),
+      ),
+      bodyMedium: bodyMedium.copyWith(
+        color: isDark
+            ? const Color(0xFFEBEBF5).withOpacity(0.6)
+            : const Color(0xFF3A3A3C),
+      ),
       labelLarge: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
     );
   }

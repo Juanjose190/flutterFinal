@@ -22,7 +22,9 @@ class _AulaFormScreenState extends State<AulaFormScreen> {
   void initState() {
     super.initState();
     _nombreCtrl = TextEditingController(text: widget.aula?.nombre ?? '');
-    _capacidadCtrl = TextEditingController(text: widget.aula?.capacidad.toString() ?? '');
+    _capacidadCtrl = TextEditingController(
+      text: widget.aula?.capacidad.toString() ?? '',
+    );
   }
 
   void _save() {
@@ -42,7 +44,7 @@ class _AulaFormScreenState extends State<AulaFormScreen> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: cs.surfaceVariant.withOpacity(0.4),
+      fillColor: cs.surfaceContainerHighest.withOpacity(0.4),
       prefixIcon: icon != null ? Icon(icon) : null,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
     );
@@ -54,7 +56,9 @@ class _AulaFormScreenState extends State<AulaFormScreen> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.large(title: Text(editing ? 'Editar aula' : 'Nueva aula')),
+          SliverAppBar.large(
+            title: Text(editing ? 'Editar aula' : 'Nueva aula'),
+          ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
             sliver: SliverToBoxAdapter(
@@ -65,15 +69,25 @@ class _AulaFormScreenState extends State<AulaFormScreen> {
                     children: [
                       TextFormField(
                         controller: _nombreCtrl,
-                        decoration: _decoration(label: 'Nombre', icon: CupertinoIcons.building_2_fill),
-                        validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                        decoration: _decoration(
+                          label: 'Nombre',
+                          icon: CupertinoIcons.building_2_fill,
+                        ),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Requerido'
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _capacidadCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _decoration(label: 'Capacidad', icon: CupertinoIcons.number),
-                        validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                        decoration: _decoration(
+                          label: 'Capacidad',
+                          icon: CupertinoIcons.number,
+                        ),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Requerido'
+                            : null,
                       ),
                       const SizedBox(height: 20),
                       Align(

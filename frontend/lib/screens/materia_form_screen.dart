@@ -22,7 +22,9 @@ class _MateriaFormScreenState extends State<MateriaFormScreen> {
   void initState() {
     super.initState();
     _nombreCtrl = TextEditingController(text: widget.materia?.nombre ?? '');
-    _horasCtrl = TextEditingController(text: widget.materia?.horas.toString() ?? '');
+    _horasCtrl = TextEditingController(
+      text: widget.materia?.horas.toString() ?? '',
+    );
   }
 
   void _save() {
@@ -42,7 +44,7 @@ class _MateriaFormScreenState extends State<MateriaFormScreen> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: cs.surfaceVariant.withOpacity(0.4),
+      fillColor: cs.surfaceContainerHighest.withOpacity(0.4),
       prefixIcon: icon != null ? Icon(icon) : null,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
     );
@@ -54,7 +56,9 @@ class _MateriaFormScreenState extends State<MateriaFormScreen> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.large(title: Text(editing ? 'Editar materia' : 'Nueva materia')),
+          SliverAppBar.large(
+            title: Text(editing ? 'Editar materia' : 'Nueva materia'),
+          ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
             sliver: SliverToBoxAdapter(
@@ -65,15 +69,25 @@ class _MateriaFormScreenState extends State<MateriaFormScreen> {
                     children: [
                       TextFormField(
                         controller: _nombreCtrl,
-                        decoration: _decoration(label: 'Nombre', icon: CupertinoIcons.book),
-                        validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                        decoration: _decoration(
+                          label: 'Nombre',
+                          icon: CupertinoIcons.book,
+                        ),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Requerido'
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _horasCtrl,
                         keyboardType: TextInputType.number,
-                        decoration: _decoration(label: 'Horas por semana', icon: CupertinoIcons.timer),
-                        validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                        decoration: _decoration(
+                          label: 'Horas por semana',
+                          icon: CupertinoIcons.timer,
+                        ),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Requerido'
+                            : null,
                       ),
                       const SizedBox(height: 20),
                       Align(
