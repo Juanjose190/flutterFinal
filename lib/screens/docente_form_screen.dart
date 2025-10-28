@@ -30,7 +30,11 @@ class _DocenteFormScreenState extends State<DocenteFormScreen> {
       if (widget.docente == null) {
         repo.addDocente(_nombreCtrl.text.trim(), _emailCtrl.text.trim());
       } else {
-        repo.updateDocente(widget.docente!.id, _nombreCtrl.text.trim(), _emailCtrl.text.trim());
+        repo.updateDocente(
+          widget.docente!.id,
+          _nombreCtrl.text.trim(),
+          _emailCtrl.text.trim(),
+        );
       }
       context.pop();
     }
@@ -41,7 +45,7 @@ class _DocenteFormScreenState extends State<DocenteFormScreen> {
     return InputDecoration(
       labelText: label,
       filled: true,
-      fillColor: cs.surfaceVariant.withOpacity(0.4),
+      fillColor: cs.surfaceContainerHighest.withOpacity(0.4),
       prefixIcon: icon != null ? Icon(icon) : null,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
     );
@@ -53,7 +57,9 @@ class _DocenteFormScreenState extends State<DocenteFormScreen> {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-          SliverAppBar.large(title: Text(editing ? 'Editar docente' : 'Nuevo docente')),
+          SliverAppBar.large(
+            title: Text(editing ? 'Editar docente' : 'Nuevo docente'),
+          ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 100),
             sliver: SliverToBoxAdapter(
@@ -64,14 +70,24 @@ class _DocenteFormScreenState extends State<DocenteFormScreen> {
                     children: [
                       TextFormField(
                         controller: _nombreCtrl,
-                        decoration: _decoration(label: 'Nombre', icon: CupertinoIcons.person),
-                        validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                        decoration: _decoration(
+                          label: 'Nombre',
+                          icon: CupertinoIcons.person,
+                        ),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Requerido'
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       TextFormField(
                         controller: _emailCtrl,
-                        decoration: _decoration(label: 'Email', icon: CupertinoIcons.at),
-                        validator: (v) => (v == null || v.trim().isEmpty) ? 'Requerido' : null,
+                        decoration: _decoration(
+                          label: 'Email',
+                          icon: CupertinoIcons.at,
+                        ),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Requerido'
+                            : null,
                       ),
                       const SizedBox(height: 20),
                       Align(
