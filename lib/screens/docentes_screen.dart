@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../data_repository.dart';
 
-class DocentesScreen extends StatelessWidget {
+class DocentesScreen extends StatefulWidget {
   const DocentesScreen({super.key});
 
   @override
+  State<DocentesScreen> createState() => _DocentesScreenState();
+}
+
+class _DocentesScreenState extends State<DocentesScreen> {
+  final repo = DataRepository.instance;
+
+  @override
   Widget build(BuildContext context) {
-    final repo = DataRepository.instance;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -32,7 +38,10 @@ class DocentesScreen extends StatelessWidget {
                       child: const Icon(Icons.delete, color: Colors.red),
                     ),
                     direction: DismissDirection.endToStart,
-                    onDismissed: (_) => repo.deleteDocente(d.id),
+                    onDismissed: (_) async {
+                      await repo.deleteDocente(d.id);
+                      setState(() {}); // Actualizar UI después de eliminar
+                    },
                     child: Card(
                       elevation: 4,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

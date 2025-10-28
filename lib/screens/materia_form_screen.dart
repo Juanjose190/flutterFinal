@@ -25,15 +25,30 @@ class _MateriaFormScreenState extends State<MateriaFormScreen> {
     _horasCtrl = TextEditingController(text: widget.materia?.horas.toString() ?? '');
   }
 
-  void _save() {
+  bool _isLoading = false;
+
+  Future<void> _save() async {
     if (_formKey.currentState?.validate() ?? false) {
-      final horas = int.tryParse(_horasCtrl.text.trim()) ?? 0;
-      if (widget.materia == null) {
-        repo.addMateria(_nombreCtrl.text.trim(), horas);
-      } else {
-        repo.updateMateria(widget.materia!.id, _nombreCtrl.text.trim(), horas);
+      setState(() {
+        _isLoading = true;
+      });
+      
+      try {
+        if (widget.materia == null) {
+          await repo.addMateria(_nombreCtrl.text.trim(), int.parse(_horasCtrl.text.trim()));
+        } else {
+          await repo.updateMateria(widget.materia!.id, _nombreCtrl.text.trim(), int.parse(_horasCtrl.text.trim()));
+        }
+        if (mounted) {
+          context.pop();
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
-      context.pop();
     }
   }
 

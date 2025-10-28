@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../data_repository.dart';
 
-class MateriasScreen extends StatelessWidget {
+class MateriasScreen extends StatefulWidget {
   const MateriasScreen({super.key});
 
   @override
+  State<MateriasScreen> createState() => _MateriasScreenState();
+}
+
+class _MateriasScreenState extends State<MateriasScreen> {
+  final repo = DataRepository.instance;
+
+  @override
   Widget build(BuildContext context) {
-    final repo = DataRepository.instance;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -32,13 +38,16 @@ class MateriasScreen extends StatelessWidget {
                       child: const Icon(Icons.delete, color: Colors.red),
                     ),
                     direction: DismissDirection.endToStart,
-                    onDismissed: (_) => repo.deleteMateria(m.id),
+                    onDismissed: (_) async {
+                      await repo.deleteMateria(m.id);
+                      setState(() {}); // Actualizar UI después de eliminar
+                    },
                     child: Card(
                       elevation: 4,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       child: ListTile(
                         title: Text(m.nombre),
-                        subtitle: Text('Horas/sem: ${m.horas}'),
+                        subtitle: Text('${m.horas} horas'),
                         leading: const CircleAvatar(child: Icon(Icons.book_outlined)),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => context.push('/materia_form', extra: m),

@@ -50,16 +50,19 @@ class _GenerarHorarioScreenState extends State<GenerarHorarioScreen> {
     );
 
     await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
     Navigator.of(context).pop(); // cerrar loading
 
-    final horario = repo.createHorario(
+    final horario = await repo.createHorario(
       docenteIds: _docenteIds.toList(),
       materiaIds: _materiaIds.toList(),
       aulaIds: _aulaIds.toList(),
       status: HorarioStatus.borrador,
     );
 
-    context.push('/horario', extra: horario);
+    if (mounted) {
+      context.push('/ver_horario', extra: horario.id);
+    }
   }
 
   @override

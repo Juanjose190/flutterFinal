@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../data_repository.dart';
 
-class AulasScreen extends StatelessWidget {
+class AulasScreen extends StatefulWidget {
   const AulasScreen({super.key});
 
   @override
+  State<AulasScreen> createState() => _AulasScreenState();
+}
+
+class _AulasScreenState extends State<AulasScreen> {
+  final repo = DataRepository.instance;
+
+  @override
   Widget build(BuildContext context) {
-    final repo = DataRepository.instance;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -32,15 +38,17 @@ class AulasScreen extends StatelessWidget {
                       child: const Icon(Icons.delete, color: Colors.red),
                     ),
                     direction: DismissDirection.endToStart,
-                    onDismissed: (_) => repo.deleteAula(a.id),
+                    onDismissed: (_) async {
+                      await repo.deleteAula(a.id);
+                      setState(() {});
+                    },
                     child: Card(
                       elevation: 4,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       child: ListTile(
                         title: Text(a.nombre),
-                        subtitle: Text('Capacidad: ${a.capacidad}')
-                        ,
-                        leading: const CircleAvatar(child: Icon(Icons.meeting_room)),
+                        subtitle: Text('Capacidad: ${a.capacidad}'),
+                        leading: const CircleAvatar(child: Icon(Icons.meeting_room_outlined)),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () => context.push('/aula_form', extra: a),
                       ),

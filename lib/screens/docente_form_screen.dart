@@ -17,6 +17,7 @@ class _DocenteFormScreenState extends State<DocenteFormScreen> {
   late TextEditingController _nombreCtrl;
   late TextEditingController _emailCtrl;
   final repo = DataRepository.instance;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -25,14 +26,28 @@ class _DocenteFormScreenState extends State<DocenteFormScreen> {
     _emailCtrl = TextEditingController(text: widget.docente?.email ?? '');
   }
 
-  void _save() {
+  Future<void> _save() async {
     if (_formKey.currentState?.validate() ?? false) {
-      if (widget.docente == null) {
-        repo.addDocente(_nombreCtrl.text.trim(), _emailCtrl.text.trim());
-      } else {
-        repo.updateDocente(widget.docente!.id, _nombreCtrl.text.trim(), _emailCtrl.text.trim());
+      setState(() {
+        _isLoading = true;
+      });
+      
+      try {
+        if (widget.docente == null) {
+          await repo.addDocente(_nombreCtrl.text.trim(), _emailCtrl.text.trim());
+        } else {
+          await repo.updateDocente(widget.docente!.id, _nombreCtrl.text.trim(), _emailCtrl.text.trim());
+        }
+        if (mounted) {
+          context.pop();
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
-      context.pop();
     }
   }
 
@@ -77,8 +92,10 @@ class _DocenteFormScreenState extends State<DocenteFormScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: FilledButton.tonalIcon(
-                          onPressed: _save,
-                          icon: const Icon(CupertinoIcons.check_mark),
+                          onPressed: _isLoading ? null : _save,
+                          icon: _isLoading 
+                            ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                            : const Icon(CupertinoIcons.check_mark),
                           label: const Text('Guardar'),
                         ),
                       ),
