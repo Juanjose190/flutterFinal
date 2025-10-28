@@ -6,7 +6,6 @@ import 'api_client.dart';
 class AulaService {
   final _basePath = '/api/aulas';
 
-  // Métodos originales (en inglés)
   Future<List<dynamic>> getAll() async {
     final response = await http.get(ApiClient.uri(_basePath));
     if (response.statusCode == 200) {
@@ -58,7 +57,6 @@ class AulaService {
     }
   }
 
-  // ---------- Aliases en español (para que cuadre con la UI) ----------
   Future<List<dynamic>> getAulas() => getAll();
 
   Future<void> deleteAula(int id) => delete(id);
