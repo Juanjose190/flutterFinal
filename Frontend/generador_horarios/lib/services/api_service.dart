@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  final String baseUrl = 'http://localhost:8081/api';
+  final String baseUrl = 'http://10.0.2.2:8081/api';
   final String geminiApiKey = 'AIzaSyCaa_sM_mKU0xSc5tPMKanperYFD7Ox-yw';
   final String supabaseUrl =
       'postgresql://postgres:Juanes25!@db.gyddufkyfhxuvyvhiewp.supabase.co:5432/postgres';

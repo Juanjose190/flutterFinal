@@ -30,50 +30,61 @@ public class ProfesorController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Profesor> getProfesorById(@PathVariable Long id) {
-        Profesor p = supabaseService.getProfesorById(id);
-        if (p == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(p);
+        Profesor profesor = supabaseService.getProfesorById(id);
+        return (profesor == null)
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok(profesor);
     }
 
     @PostMapping
     public ResponseEntity<Profesor> createProfesor(@RequestBody ProfesorRequest req) {
+
+        // Crear el profesor base
         Profesor profesor = new Profesor();
         profesor.setNombre(req.getNombre());
         profesor.setApellido(req.getApellido());
         profesor.setEmail(req.getEmail());
         profesor.setHorasDisponibles(req.getHorasDisponibles());
-        // Disponibilidad se almacena en tabla aparte en Supabase
-        profesor.setDisponibilidad(req.getDisponibilidad());
+
         Profesor created = supabaseService.insertProfesor(profesor);
-        // Persistir relaciones y disponibilidad si vienen en request
+
+        // Si se creó correctamente, manejamos relaciones en Supabase
         if (created != null && created.getId() != null) {
-            if (req.getMaterias() != null) {
+
+            if (req.getMaterias() != null && !req.getMaterias().isEmpty()) {
                 supabaseService.replaceProfesorMaterias(created.getId(), req.getMaterias());
             }
-            if (req.getDisponibilidad() != null) {
+
+            if (req.getDisponibilidad() != null && !req.getDisponibilidad().isEmpty()) {
                 supabaseService.replaceDisponibilidadProfesor(created.getId(), req.getDisponibilidad());
             }
         }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Profesor> updateProfesor(@PathVariable Long id, @RequestBody ProfesorRequest req) {
-        Profesor p = new Profesor();
-        p.setId(id);
-        p.setNombre(req.getNombre());
-        p.setApellido(req.getApellido());
-        p.setEmail(req.getEmail());
-        p.setHorasDisponibles(req.getHorasDisponibles());
-        p.setDisponibilidad(req.getDisponibilidad());
-        Profesor updated = supabaseService.updateProfesor(id, p);
-        // Reemplazar relaciones y disponibilidad si vienen en request
+
+        // Actualizar los datos base del profesor
+        Profesor profesor = new Profesor();
+        profesor.setId(id);
+        profesor.setNombre(req.getNombre());
+        profesor.setApellido(req.getApellido());
+        profesor.setEmail(req.getEmail());
+        profesor.setHorasDisponibles(req.getHorasDisponibles());
+
+        Profesor updated = supabaseService.updateProfesor(id, profesor);
+
+        // Reemplazar relaciones si se mandaron
         if (req.getMaterias() != null) {
             supabaseService.replaceProfesorMaterias(id, req.getMaterias());
         }
+
         if (req.getDisponibilidad() != null) {
             supabaseService.replaceDisponibilidadProfesor(id, req.getDisponibilidad());
         }
+
         return ResponseEntity.ok(updated);
     }
 
@@ -83,7 +94,8 @@ public class ProfesorController {
         return ResponseEntity.noContent().build();
     }
 
-    // ----- Relaciones y disponibilidad -----
+    // ------- Relaciones y disponibilidad -------
+
     @GetMapping("/{id}/materias")
     public ResponseEntity<List<Long>> getMateriasByProfesor(@PathVariable Long id) {
         return ResponseEntity.ok(supabaseService.getMateriaIdsByProfesorId(id));

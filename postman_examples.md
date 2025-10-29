@@ -1,6 +1,6 @@
 # Ejemplos POST (raw JSON) para Postman
 
-Base URL: `http://localhost:8080/api`
+Base URL: `http://10.0.2.2:8080/api`
 
 Contenido preparado para usar en Postman con Body `raw` → `JSON` y header `Content-Type: application/json`.
 
