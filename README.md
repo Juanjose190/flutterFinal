@@ -461,9 +461,3 @@ Prioridad Media: Crear una vista detallada del profesor que consolide toda su in
 Prioridad Media: Implementación de métricas y detección de conflictos en el Horario generado antes de la persistencia final (p. ej., un profesor en dos aulas al mismo tiempo).
 
 Prioridad Baja: Cobertura de Tests automatizados (Unitarias y de Integración).
-
-Licencia
-
-Proyecto académico libre para uso educativo y mejora continua.
-
-Contacto: [Tu Nombre o Email]
