@@ -284,6 +284,48 @@ abstract class AppLocalizations {
   /// **'Apply'**
   String get apply;
 
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @scheduleDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule Details'**
+  String get scheduleDetails;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @none.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get none;
+
+  /// No description provided for @id.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get id;
+
+  /// No description provided for @fullscreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Full screen'**
+  String get fullscreen;
+
+  /// No description provided for @fullscreenEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Full screen enabled. Press Esc or tap again to exit.'**
+  String get fullscreenEnabled;
+
   /// No description provided for @aiGenerate.
   ///
   /// In en, this message translates to:

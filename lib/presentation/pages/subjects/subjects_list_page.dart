@@ -7,6 +7,7 @@ import '../../../domain/entities/classroom.dart';
 import '../../widgets/blob_background.dart';
 import '../../widgets/glass_widgets.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/name_localizer.dart';
 
 class SubjectsListPage extends StatefulWidget {
   const SubjectsListPage({super.key});
@@ -80,9 +81,9 @@ class _SubjectsListPageState extends State<SubjectsListPage> {
                       ),
                       const SizedBox(width: 12),
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(item.name, style: Theme.of(context).textTheme.titleMedium),
+                        Text(localizeEntityName(context, item.name, EntityKind.subject), style: Theme.of(context).textTheme.titleMedium),
                         if (classroomName.isNotEmpty)
-                          Text('${t.classroom}: $classroomName', style: Theme.of(context).textTheme.bodySmall),
+                          Text('${t.classroom}: ${localizeEntityName(context, classroomName, EntityKind.classroom)}', style: Theme.of(context).textTheme.bodySmall),
                       ])),
                       IconButton(icon: const Icon(Icons.edit), onPressed: () => _showEdit(item.id, item.name, item.classroomId)),
                       IconButton(icon: const Icon(Icons.delete), onPressed: () => cubit.remove(item.id)),
@@ -111,8 +112,8 @@ class _SubjectsListPageState extends State<SubjectsListPage> {
           DropdownButtonFormField<String>(
             value: selectedClassroomId,
             items: [
-              DropdownMenuItem(value: null, child: Text('None')),
-              ...cubit.state.classrooms.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name)))
+              DropdownMenuItem(value: null, child: Text(t.none)),
+              ...cubit.state.classrooms.map((c) => DropdownMenuItem(value: c.id, child: Text(localizeEntityName(context, c.name, EntityKind.classroom))))
             ],
             onChanged: (v) => selectedClassroomId = v,
             decoration: InputDecoration(labelText: t.classroom),
@@ -140,8 +141,8 @@ class _SubjectsListPageState extends State<SubjectsListPage> {
           DropdownButtonFormField<String>(
             value: selectedClassroomId,
             items: [
-              DropdownMenuItem(value: null, child: Text('None')),
-              ...cubit.state.classrooms.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name)))
+              DropdownMenuItem(value: null, child: Text(t.none)),
+              ...cubit.state.classrooms.map((c) => DropdownMenuItem(value: c.id, child: Text(localizeEntityName(context, c.name, EntityKind.classroom))))
             ],
             onChanged: (v) => selectedClassroomId = v,
             decoration: InputDecoration(labelText: t.classroom),

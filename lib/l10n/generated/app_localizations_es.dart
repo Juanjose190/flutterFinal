@@ -104,6 +104,28 @@ class AppLocalizationsEs extends AppLocalizations {
   String get apply => 'Aplicar';
 
   @override
+  String get notes => 'Notas';
+
+  @override
+  String get scheduleDetails => 'Detalles del horario';
+
+  @override
+  String get close => 'Cerrar';
+
+  @override
+  String get none => 'Ninguno';
+
+  @override
+  String get id => 'ID';
+
+  @override
+  String get fullscreen => 'Pantalla completa';
+
+  @override
+  String get fullscreenEnabled =>
+      'Pantalla completa activada. Presiona Esc o toca de nuevo para salir.';
+
+  @override
   String get aiGenerate => 'Generar con IA';
 
   @override
