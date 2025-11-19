@@ -104,6 +104,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get apply => 'Apply';
 
   @override
+  String get notes => 'Notes';
+
+  @override
+  String get scheduleDetails => 'Schedule Details';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get none => 'None';
+
+  @override
+  String get id => 'ID';
+
+  @override
+  String get fullscreen => 'Full screen';
+
+  @override
+  String get fullscreenEnabled =>
+      'Full screen enabled. Press Esc or tap again to exit.';
+
+  @override
   String get aiGenerate => 'AI Generate';
 
   @override

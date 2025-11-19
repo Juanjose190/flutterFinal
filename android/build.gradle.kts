@@ -16,6 +16,19 @@ subprojects {
     project.layout.buildDirectory.value(newSubprojectBuildDir)
 }
 subprojects {
+    afterEvaluate {
+        val androidExt = project.extensions.findByName("android")
+        if (androidExt != null) {
+            val getNs = androidExt.javaClass.methods.find { it.name == "getNamespace" && it.parameterCount == 0 }
+            val currentNs = getNs?.invoke(androidExt) as? String
+            if (currentNs == null || currentNs.isBlank()) {
+                val setNs = androidExt.javaClass.methods.find { it.name == "setNamespace" && it.parameterCount == 1 }
+                setNs?.invoke(androidExt, project.group.toString())
+            }
+        }
+    }
+}
+subprojects {
     project.evaluationDependsOn(":app")
 }
 

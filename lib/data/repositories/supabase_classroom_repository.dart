@@ -19,13 +19,20 @@ class SupabaseClassroomRepository implements ClassroomRepository {
 
   @override
   Future<Classroom?> getById(String id) async {
-    final res = await client.from('classrooms').select().eq('id', id).maybeSingle();
+    final res = await client
+        .from('classrooms')
+        .select('id,name,is_special')
+        .eq('id', id)
+        .maybeSingle();
     return res == null ? null : Classroom.fromMap(res);
   }
 
   @override
   Future<List<Classroom>> list() async {
-    final res = await client.from('classrooms').select();
+    final res = await client
+        .from('classrooms')
+        .select('id,name,is_special')
+        .order('name', ascending: true);
     return (res as List).map((e) => Classroom.fromMap(e)).toList();
   }
 

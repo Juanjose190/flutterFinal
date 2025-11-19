@@ -8,6 +8,7 @@ import 'core/router/app_router.dart';
 import 'presentation/bloc/settings_cubit.dart';
 import 'presentation/bloc/auth_cubit.dart';
 import 'l10n/generated/app_localizations.dart';
+import 'core/tz_init.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ Future<void> main() async {
       supabaseAnon.isNotEmpty) {
     await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnon);
   }
+  await TimezoneInit.ensureInitialized();
 
   runApp(const SchedulesApp());
 }

@@ -7,6 +7,8 @@ import 'package:go_router/go_router.dart';
 import '../../../domain/entities/schedule.dart';
 import '../../widgets/blob_background.dart';
 import '../../widgets/glass_widgets.dart';
+import '../../../core/name_localizer.dart';
+import '../../../core/fullscreen.dart';
 
 class SchedulesViewPage extends StatefulWidget {
   const SchedulesViewPage({super.key});
@@ -38,6 +40,16 @@ class _SchedulesViewPageState extends State<SchedulesViewPage> {
         elevation: 0,
         leading: BackButton(onPressed: () => context.pop()),
         actions: [
+          IconButton(
+            tooltip: t.fullscreen,
+            onPressed: () async {
+              await enterFullscreen();
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(t.fullscreenEnabled)));
+              }
+            },
+            icon: const Icon(Icons.fullscreen),
+          ),
           IconButton(onPressed: () => context.push('/schedules/ai'), icon: const Icon(Icons.auto_awesome))
         ],
       ),
@@ -52,22 +64,63 @@ class _SchedulesViewPageState extends State<SchedulesViewPage> {
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(t.filters, style: const TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                Row(children: [
-                  Expanded(child: TextField(controller: _teacherCtrl, decoration: InputDecoration(labelText: t.teacher))),
-                  const SizedBox(width: 8),
-                  Expanded(child: TextField(controller: _subjectCtrl, decoration: InputDecoration(labelText: t.subject))),
-                  const SizedBox(width: 8),
-                  Expanded(child: TextField(controller: _classroomCtrl, decoration: InputDecoration(labelText: t.classroom))),
-                  const SizedBox(width: 8),
-                  ElevatedButton(onPressed: () async {
-                    final picked = await showDatePicker(context: context, initialDate: DateTime.now(), firstDate: DateTime(2020), lastDate: DateTime(2100));
-                    setState(() { _date = picked; });
-                  }, child: Text(t.date)),
-                  const SizedBox(width: 8),
-                  ElevatedButton(onPressed: () {
-                    cubit.setFilters(teacherId: _teacherCtrl.text.isEmpty ? null : _teacherCtrl.text, subjectId: _subjectCtrl.text.isEmpty ? null : _subjectCtrl.text, classroomId: _classroomCtrl.text.isEmpty ? null : _classroomCtrl.text, date: _date);
-                  }, child: Text(t.apply)),
-                ])
+                LayoutBuilder(builder: (context, constraints) {
+                  final isWide = constraints.maxWidth >= 700;
+                  final itemWidth = isWide ? (constraints.maxWidth - 36) / 4 : constraints.maxWidth - 24;
+                  final localeTag = Localizations.localeOf(context).toLanguageTag();
+                  return Wrap(spacing: 12, runSpacing: 12, children: [
+                    SizedBox(
+                      width: itemWidth,
+                      child: TextFormField(
+                        controller: _teacherCtrl,
+                        decoration: InputDecoration(labelText: t.teacher, hintText: t.id, prefixIcon: const Icon(Icons.person_outline)),
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: TextFormField(
+                        controller: _subjectCtrl,
+                        decoration: InputDecoration(labelText: t.subject, hintText: t.id, prefixIcon: const Icon(Icons.menu_book_outlined)),
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: TextFormField(
+                        controller: _classroomCtrl,
+                        decoration: InputDecoration(labelText: t.classroom, hintText: t.id, prefixIcon: const Icon(Icons.meeting_room_outlined)),
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: TextFormField(
+                        readOnly: true,
+                        decoration: InputDecoration(
+                          labelText: t.date,
+                          hintText: _date == null ? intl.DateFormat('dd/MM/yyyy', localeTag).format(DateTime.now()) : intl.DateFormat('dd/MM/yyyy', localeTag).format(_date!),
+                          prefixIcon: const Icon(Icons.calendar_today_outlined),
+                        ),
+                        onTap: () async {
+                          final picked = await showDatePicker(context: context, initialDate: _date ?? DateTime.now(), firstDate: DateTime(2020), lastDate: DateTime(2100));
+                          setState(() { _date = picked; });
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: isWide ? itemWidth : double.infinity,
+                      child: FilledButton(
+                        onPressed: () {
+                          cubit.setFilters(
+                            teacherId: _teacherCtrl.text.isEmpty ? null : _teacherCtrl.text,
+                            subjectId: _subjectCtrl.text.isEmpty ? null : _subjectCtrl.text,
+                            classroomId: _classroomCtrl.text.isEmpty ? null : _classroomCtrl.text,
+                            date: _date,
+                          );
+                        },
+                        child: Text(t.apply),
+                      ),
+                    ),
+                  ]);
+                })
               ]),
             ),
           ),
@@ -86,20 +139,22 @@ class _SchedulesViewPageState extends State<SchedulesViewPage> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
-                          columns: const [
-                            DataColumn(label: Text('Date')),
-                            DataColumn(label: Text('Teacher')),
-                            DataColumn(label: Text('Subject')),
-                            DataColumn(label: Text('Classroom')),
-                            DataColumn(label: Text('Notes')),
+                          columns: [
+                            DataColumn(label: Text(t.date)),
+                            DataColumn(label: Text(t.teacher)),
+                            DataColumn(label: Text(t.subject)),
+                            DataColumn(label: Text(t.classroom)),
+                            DataColumn(label: Text(t.notes)),
                           ],
                           rows: s.items.map((item) {
                             final teacherName = s.teacherNames[item.teacherId] ?? item.teacherId;
-                            final subjectName = s.subjectNames[item.subjectId] ?? item.subjectId;
-                            final classroomName = s.classroomNames[item.classroomId] ?? item.classroomId;
+                            final subjectRaw = s.subjectNames[item.subjectId] ?? item.subjectId;
+                            final classroomRaw = s.classroomNames[item.classroomId] ?? item.classroomId;
+                            final subjectName = localizeEntityName(context, subjectRaw, EntityKind.subject);
+                            final classroomName = localizeEntityName(context, classroomRaw, EntityKind.classroom);
                             return DataRow(
                               cells: [
-                                DataCell(Text(_formatDate(item.date))),
+                                DataCell(Text(_formatDate(context, item.date))),
                                 DataCell(Text(teacherName)),
                                 DataCell(Text(subjectName)),
                                 DataCell(Text(classroomName)),
@@ -126,33 +181,35 @@ class _SchedulesViewPageState extends State<SchedulesViewPage> {
   }
 
   void _showDetailsDialog(BuildContext context, Schedule item, String teacherName, String subjectName, String classroomName) {
+    final t = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Schedule Details'),
+        title: Text(t.scheduleDetails),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Date: ${_formatDate(item.date)}'),
-            Text('Teacher: $teacherName'),
-            Text('Subject: $subjectName'),
-            Text('Classroom: $classroomName'),
-            if ((item.notes ?? '').isNotEmpty) Text('Notes: ${item.notes}'),
+            Text('${t.date}: ${_formatDate(context, item.date)}'),
+            Text('${t.teacher}: $teacherName'),
+            Text('${t.subject}: $subjectName'),
+            Text('${t.classroom}: $classroomName'),
+            if ((item.notes ?? '').isNotEmpty) Text('${t.notes}: ${item.notes}'),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(t.close)),
         ],
       ),
     );
   }
 
-  String _formatDate(DateTime dt) {
+  String _formatDate(BuildContext context, DateTime dt) {
+    final locale = Localizations.localeOf(context);
     final local = dt.toLocal();
-    final dayName = intl.DateFormat('EEEE').format(local);
-    final datePart = intl.DateFormat('dd/MM/yyyy').format(local);
-    final timePart = intl.DateFormat('HH:mm').format(local);
+    final dayName = intl.DateFormat('EEEE', locale.toLanguageTag()).format(local);
+    final datePart = intl.DateFormat('dd/MM/yyyy', locale.toLanguageTag()).format(local);
+    final timePart = intl.DateFormat('HH:mm', locale.toLanguageTag()).format(local);
     return '$dayName - $datePart - $timePart';
   }
 }

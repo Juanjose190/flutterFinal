@@ -20,13 +20,20 @@ class SupabaseSubjectRepository implements SubjectRepository {
 
   @override
   Future<Subject?> getById(String id) async {
-    final res = await client.from('subjects').select().eq('id', id).maybeSingle();
+    final res = await client
+        .from('subjects')
+        .select('id,name,classroom_id')
+        .eq('id', id)
+        .maybeSingle();
     return res == null ? null : Subject.fromMap(res);
   }
 
   @override
   Future<List<Subject>> list() async {
-    final res = await client.from('subjects').select();
+    final res = await client
+        .from('subjects')
+        .select('id,name,classroom_id')
+        .order('name', ascending: true);
     return (res as List).map((e) => Subject.fromMap(e)).toList();
   }
 

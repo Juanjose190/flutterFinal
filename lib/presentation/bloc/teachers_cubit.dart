@@ -6,6 +6,7 @@ import '../../domain/repositories/teacher_repository.dart';
 import '../../data/supabase/supabase_service.dart';
 import '../../data/repositories/supabase_teacher_repository.dart';
 import '../../data/repositories/supabase_subject_repository.dart';
+import '../../core/perf_monitor.dart';
 
 class TeachersState extends Equatable {
   final List<Teacher> items;
@@ -28,10 +29,13 @@ class TeachersCubit extends Cubit<TeachersState> {
   Future<void> load() async {
     emit(state.copyWith(loading: true, error: null));
     try {
-      final items = await repo.list();
-      // Load subjects for dropdown and name resolution
       final client = SupabaseService().client;
-      final subjects = await SupabaseSubjectRepository(client).list();
+      final results = await PerformanceMonitor.time('teachers+subjects.load', Future.wait([
+        repo.list(),
+        SupabaseSubjectRepository(client).list(),
+      ]));
+      final items = results[0] as List<Teacher>;
+      final subjects = results[1] as List<Subject>;
       emit(TeachersState(items: items, loading: false, subjects: subjects));
     } catch (e) {
       emit(state.copyWith(loading: false, error: e.toString()));

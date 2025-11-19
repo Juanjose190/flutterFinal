@@ -18,7 +18,7 @@ class SupabaseScheduleRepository implements ScheduleRepository {
     final res = await client
         .from('schedules')
         .insert(payload)
-        .select()
+        .select('id,teacher_id,subject_id,classroom_id,date,notes')
         .single();
     return Schedule.fromMap(res);
   }
@@ -32,7 +32,7 @@ class SupabaseScheduleRepository implements ScheduleRepository {
   Future<Schedule?> getById(String id) async {
     final res = await client
         .from('schedules')
-        .select()
+        .select('id,teacher_id,subject_id,classroom_id,date,notes')
         .eq('id', id)
         .maybeSingle();
     return res == null ? null : Schedule.fromMap(res);
@@ -44,12 +44,32 @@ class SupabaseScheduleRepository implements ScheduleRepository {
     String? subjectId,
     String? classroomId,
     DateTime? date,
+    int? limit,
+    int? offset,
   }) async {
-    var query = client.from('schedules').select();
-    if (teacherId != null) query = query.eq('teacher_id', teacherId);
-    if (subjectId != null) query = query.eq('subject_id', subjectId);
-    if (classroomId != null) query = query.eq('classroom_id', classroomId);
-    if (date != null) query = query.eq('date', date.toIso8601String());
+    dynamic query = client
+        .from('schedules')
+        .select('id,teacher_id,subject_id,classroom_id,date,notes');
+
+    if (teacherId != null) {
+      query = query.eq('teacher_id', teacherId);
+    }
+    if (subjectId != null) {
+      query = query.eq('subject_id', subjectId);
+    }
+    if (classroomId != null) {
+      query = query.eq('classroom_id', classroomId);
+    }
+    if (date != null) {
+      query = query.eq('date', date.toIso8601String());
+    }
+
+    query = query.order('date', ascending: true);
+
+    if (limit != null && offset != null) {
+      query = query.range(offset, offset + limit - 1);
+    }
+
     final res = await query;
     return (res as List).map((e) => Schedule.fromMap(e)).toList();
   }
@@ -67,7 +87,7 @@ class SupabaseScheduleRepository implements ScheduleRepository {
         .from('schedules')
         .update(payload)
         .eq('id', id)
-        .select()
+        .select('id,teacher_id,subject_id,classroom_id,date,notes')
         .single();
     return Schedule.fromMap(res);
   }

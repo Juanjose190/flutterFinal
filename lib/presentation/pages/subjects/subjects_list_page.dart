@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../bloc/subjects_cubit.dart';
-import '../../bloc/classrooms_cubit.dart';
-import '../../../domain/entities/classroom.dart';
 import '../../widgets/blob_background.dart';
 import '../../widgets/glass_widgets.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/name_localizer.dart';
 
 class SubjectsListPage extends StatefulWidget {
   const SubjectsListPage({super.key});
@@ -21,6 +20,7 @@ class _SubjectsListPageState extends State<SubjectsListPage> {
     super.initState();
     cubit = SubjectsCubit()..load();
   }
+
   @override
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
@@ -42,7 +42,10 @@ class _SubjectsListPageState extends State<SubjectsListPage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(onPressed: _showCreate, child: const Icon(Icons.add)),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCreate,
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
@@ -58,8 +61,11 @@ class _SubjectsListPageState extends State<SubjectsListPage> {
             itemCount: s.items.length,
             itemBuilder: (_, i) {
               final item = s.items[i];
-              final classroomName = s.classrooms.any((c) => c.id == (item.classroomId ?? ''))
-                  ? s.classrooms.firstWhere((c) => c.id == (item.classroomId ?? '')).name
+              final classroomName =
+                  s.classrooms.any((c) => c.id == (item.classroomId ?? ''))
+                  ? s.classrooms
+                        .firstWhere((c) => c.id == (item.classroomId ?? ''))
+                        .name
                   : '';
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -71,21 +77,47 @@ class _SubjectsListPageState extends State<SubjectsListPage> {
                         height: 46,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: LinearGradient(colors: [
-                            Theme.of(context).colorScheme.secondary,
-                            Theme.of(context).colorScheme.secondary.withOpacity(0.7),
-                          ]),
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).colorScheme.secondary,
+                              Theme.of(
+                                context,
+                              ).colorScheme.secondary.withOpacity(0.7),
+                            ],
+                          ),
                         ),
                         child: const Icon(Icons.menu_book, color: Colors.white),
                       ),
                       const SizedBox(width: 12),
-                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(item.name, style: Theme.of(context).textTheme.titleMedium),
-                        if (classroomName.isNotEmpty)
-                          Text('${t.classroom}: $classroomName', style: Theme.of(context).textTheme.bodySmall),
-                      ])),
-                      IconButton(icon: const Icon(Icons.edit), onPressed: () => _showEdit(item.id, item.name, item.classroomId)),
-                      IconButton(icon: const Icon(Icons.delete), onPressed: () => cubit.remove(item.id)),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              localizeEntityName(
+                                context,
+                                item.name,
+                                EntityKind.subject,
+                              ),
+                              style: Theme.of(context).textTheme.titleMedium,
+                            ),
+                            if (classroomName.isNotEmpty)
+                              Text(
+                                '${t.classroom}: ${localizeEntityName(context, classroomName, EntityKind.classroom)}',
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit),
+                        onPressed: () =>
+                            _showEdit(item.id, item.name, item.classroomId),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => cubit.remove(item.id),
+                      ),
                     ],
                   ),
                 ),
@@ -100,27 +132,51 @@ class _SubjectsListPageState extends State<SubjectsListPage> {
   void _showCreate() {
     final t = AppLocalizations.of(context)!;
     final controller = TextEditingController();
-    String? selectedClassroomId = cubit.state.classrooms.isNotEmpty ? cubit.state.classrooms.first.id : null;
+    String? selectedClassroomId = cubit.state.classrooms.isNotEmpty
+        ? cubit.state.classrooms.first.id
+        : null;
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: Text(t.create),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: controller, decoration: InputDecoration(labelText: t.name)),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            value: selectedClassroomId,
-            items: [
-              DropdownMenuItem(value: null, child: Text('None')),
-              ...cubit.state.classrooms.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name)))
-            ],
-            onChanged: (v) => selectedClassroomId = v,
-            decoration: InputDecoration(labelText: t.classroom),
-          ),
-        ]),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(labelText: t.name),
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              value: selectedClassroomId,
+              items: [
+                DropdownMenuItem(value: null, child: Text(t.none)),
+                ...cubit.state.classrooms.map(
+                  (c) => DropdownMenuItem(
+                    value: c.id,
+                    child: Text(
+                      localizeEntityName(context, c.name, EntityKind.classroom),
+                    ),
+                  ),
+                ),
+              ],
+              onChanged: (v) => selectedClassroomId = v,
+              decoration: InputDecoration(labelText: t.classroom),
+            ),
+          ],
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(t.cancel)),
-          TextButton(onPressed: () { cubit.add(controller.text, classroomId: selectedClassroomId); Navigator.pop(context); }, child: Text(t.save)),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(t.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              cubit.add(controller.text, classroomId: selectedClassroomId);
+              Navigator.pop(context);
+            },
+            child: Text(t.save),
+          ),
         ],
       ),
     );
@@ -134,22 +190,48 @@ class _SubjectsListPageState extends State<SubjectsListPage> {
       context: context,
       builder: (_) => AlertDialog(
         title: Text(t.edit),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          TextField(controller: controller, decoration: InputDecoration(labelText: t.name)),
-          const SizedBox(height: 8),
-          DropdownButtonFormField<String>(
-            value: selectedClassroomId,
-            items: [
-              DropdownMenuItem(value: null, child: Text('None')),
-              ...cubit.state.classrooms.map((c) => DropdownMenuItem(value: c.id, child: Text(c.name)))
-            ],
-            onChanged: (v) => selectedClassroomId = v,
-            decoration: InputDecoration(labelText: t.classroom),
-          ),
-        ]),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: controller,
+              decoration: InputDecoration(labelText: t.name),
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              value: selectedClassroomId,
+              items: [
+                DropdownMenuItem(value: null, child: Text(t.none)),
+                ...cubit.state.classrooms.map(
+                  (c) => DropdownMenuItem(
+                    value: c.id,
+                    child: Text(
+                      localizeEntityName(context, c.name, EntityKind.classroom),
+                    ),
+                  ),
+                ),
+              ],
+              onChanged: (v) => selectedClassroomId = v,
+              decoration: InputDecoration(labelText: t.classroom),
+            ),
+          ],
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(t.cancel)),
-          TextButton(onPressed: () { cubit.update(id, controller.text, classroomId: selectedClassroomId); Navigator.pop(context); }, child: Text(t.save)),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(t.cancel),
+          ),
+          TextButton(
+            onPressed: () {
+              cubit.update(
+                id,
+                controller.text,
+                classroomId: selectedClassroomId,
+              );
+              Navigator.pop(context);
+            },
+            child: Text(t.save),
+          ),
         ],
       ),
     );

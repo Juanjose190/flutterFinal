@@ -5,6 +5,7 @@ import '../../bloc/classrooms_cubit.dart';
 import '../../widgets/blob_background.dart';
 import '../../widgets/glass_widgets.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/name_localizer.dart';
 
 class ClassroomsListPage extends StatefulWidget {
   const ClassroomsListPage({super.key});
@@ -75,7 +76,7 @@ class _ClassroomsListPageState extends State<ClassroomsListPage> {
                       ),
                       const SizedBox(width: 12),
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                        Text(item.name, style: Theme.of(context).textTheme.titleMedium),
+                        Text(localizeEntityName(context, item.name, EntityKind.classroom), style: Theme.of(context).textTheme.titleMedium),
                         if (item.isSpecial) Text(t.specialClassroom, style: Theme.of(context).textTheme.bodySmall),
                       ])),
                       IconButton(icon: const Icon(Icons.edit), onPressed: () => _showEdit(item.id, item.name, item.isSpecial)),

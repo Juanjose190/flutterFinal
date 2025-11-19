@@ -19,13 +19,20 @@ class SupabaseTeacherRepository implements TeacherRepository {
 
   @override
   Future<Teacher?> getById(String id) async {
-    final res = await client.from('teachers').select().eq('id', id).maybeSingle();
+    final res = await client
+        .from('teachers')
+        .select('id,name,subject_id')
+        .eq('id', id)
+        .maybeSingle();
     return res == null ? null : Teacher.fromMap(res);
   }
 
   @override
   Future<List<Teacher>> list() async {
-    final res = await client.from('teachers').select();
+    final res = await client
+        .from('teachers')
+        .select('id,name,subject_id')
+        .order('name', ascending: true);
     return (res as List).map((e) => Teacher.fromMap(e)).toList();
   }
 
